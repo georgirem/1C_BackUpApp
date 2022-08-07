@@ -1,9 +1,20 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
+
 using std::string;
 using std::vector;
 
-
+std::string readFile(const std::string& fileName) {
+    std::ifstream f(fileName);
+    f.seekg(0, std::ios::end);
+    size_t size = f.tellg();
+    std::string s(size, ' ');
+    f.seekg(0);
+    f.read(&s[0], size);
+    s.erase( std::remove(s.begin(), s.end(), '\r'), s.end() );
+    return s;
+}
 vector<string> SplitIntoWords(const string& text) {
     vector<string> words;
     string word;
@@ -138,8 +149,11 @@ private:
 int main() {
     ConnectionManager Connections;
     vector<Connection> DB_List_;
-    string list_of_1cdb = "[1С Офис]\nID=3560e672-23da-470e-b4b8-62e46bcf29c0\nOrderInList=-1\nFolder=/\nOrderInTree=33280\nExternal=0\n[КИБЕРИТ]\nConnect=Srvr=\"10.10.100.146\";\nRef=\"ACC_OLD\";\nID=1862f3ef-7cc5-47b2-8ec1-48408545ac1e\nOrderInList=344319\nFolder=/1С Офис\nOrderInTree=40960\nExternal=0\nClientConnectionSpeed=Normal\nApp=Auto\nWA=1\nVersion=8.3\n[Управление IT-отделом 8, редакция 3.0]\nConnect=File=\"C:\\Work\\1C Bases\\Управление ИТ\";\nID=e6b73856-98be-4f7e-8ea8-9ba4a301aa8d\nOrderInList=1130751\nFolder=/1С Офис\nOrderInTree=24576\nExternal=0\nClientConnectionSpeed=Normal\nApp=Auto\nWA=1\nVersion=8.3.11.2867\nDefaultVersion=8.3.11.2867";
-    DB_List_ = Connections.GetDBList(list_of_1cdb);
+    string fileName = "/Users/admin/Documents/Projects/Reading1CDBListFile/Reading1CDBListFile/ibases.v8i";
+    string ibases = readFile(fileName);
+    
+    
+    DB_List_ = Connections.GetDBList(ibases);
     for (auto DB : DB_List_){
         std::cout << DB.name_ + "  " + DB.Connect_<< std::endl;
     }
